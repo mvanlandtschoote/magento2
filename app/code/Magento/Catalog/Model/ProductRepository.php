@@ -506,8 +506,15 @@ class ProductRepository implements \Magento\Catalog\Api\ProductRepositoryInterfa
     {
         $tierPrices = $product->getData('tier_price');
 
+        // PATCH BEGIN
+        $storeId = $product->getData("store_id");
+        // PATCH END
+        
         try {
-            $existingProduct = $this->get($product->getSku());
+            // PATCH BEGIN
+            //$existingProduct = $this->get($product->getSku());
+            $existingProduct = $this->get($product->getSku(), false, $storeId, true);
+            // PATCH END
 
             $product->setData(
                 $this->resourceModel->getLinkField(),
@@ -525,7 +532,14 @@ class ProductRepository implements \Magento\Catalog\Api\ProductRepositoryInterfa
         if (!$ignoreLinksFlag && $ignoreLinksFlag !== null) {
             $productLinks = $product->getProductLinks();
         }
-        $productDataArray['store_id'] = (int)$this->storeManager->getStore()->getId();
+
+        // PATCH BEGIN
+        // Only set store id if it is not already set
+        if (!isset($productDataArray['store_id'])) {
+            $productDataArray['store_id'] = (int)$this->storeManager->getStore()->getId();
+        }
+        // PATCH END
+        
         $product = $this->initializeProductData($productDataArray, empty($existingProduct));
 
         $this->processLinks($product, $productLinks);
@@ -566,7 +580,11 @@ class ProductRepository implements \Magento\Catalog\Api\ProductRepositoryInterfa
         }
         unset($this->instances[$product->getSku()]);
         unset($this->instancesById[$product->getId()]);
-        return $this->get($product->getSku());
+
+        // PATCH BEGIN
+        $result = $this->get($product->getSku(), false, $storeId, true);
+        return $result;
+        // PATCH END
     }
 
     /**
