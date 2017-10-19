@@ -74,7 +74,10 @@ class CategoryRepository implements \Magento\Catalog\Api\CategoryRepositoryInter
      */
     public function save(\Magento\Catalog\Api\Data\CategoryInterface $category)
     {
-        $storeId = (int)$this->storeManager->getStore()->getId();
+        // BEGIN PATCH
+        // CHE: use store id of category
+        $storeId = $category->getStoreId(); //(int)$this->storeManager->getStore()->getId();
+        // END PATCH
         $existingData = $this->getExtensibleDataObjectConverter()
             ->toNestedArray($category, [], 'Magento\Catalog\Api\Data\CategoryInterface');
         $existingData = array_diff_key($existingData, array_flip(['path', 'level', 'parent_id']));
