@@ -58,6 +58,23 @@ class Config implements ScopeConfigInterface
         $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         $scopeCode = null
     ) {
+        
+        //** BEGIN PATCH */
+        //When core configdata is called, and storeview is NOT given, fill in the store view id
+        try{
+            if($scope == \Magento\Store\Model\ScopeInterface::SCOPE_STORE && $scopeCode == null){
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $storeManager = $objectManager->create('Magento\Store\Model\StoreManagerInterface');
+                $scopeCode = $storeManager->getStore()->getId();
+//                $scopeCode = $storeManager->getStore()->getCode();
+            }
+        }
+        catch(\Exception $e){
+            //do nothing
+        }
+
+        //** END PATCH */
+        
         if ($scope === 'store') {
             $scope = 'stores';
         } elseif ($scope === 'website') {
