@@ -436,7 +436,13 @@ class Product extends \Magento\ImportExport\Model\Export\Entity\AbstractEntity
             if ($pathSize > 1) {
                 $path = [];
                 for ($i = 1; $i < $pathSize; $i++) {
-                    $path[] = $collection->getItemById($structure[$i])->getName();
+                    //** BEGIN PATCH */
+                    // Added null-check
+                    $cat = $collection->getItemById($structure[$i]);
+                    if (!is_null($cat)) {
+                        $path[] = $cat->getName();
+                    }
+                    //** END PATCH */
                 }
                 $this->_rootCategories[$category->getId()] = array_shift($path);
                 if ($pathSize > 2) {
