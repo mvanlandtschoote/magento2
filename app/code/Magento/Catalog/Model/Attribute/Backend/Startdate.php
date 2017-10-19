@@ -47,9 +47,17 @@ class Startdate extends \Magento\Eav\Model\Entity\Attribute\Backend\Datetime
         if ($startDate === false) {
             return false;
         }
-        if ($startDate == '' && $object->getSpecialPrice()) {
+        // PATCH BEGIN
+        // Only return the current date if we are saving a special price from date.
+        // By default, Magento also executes this when saving the news_from_date, which incorrectly sets
+        // the news_from_date
+        /*if ($startDate == '' && $object->getSpecialPrice()) {
+            $startDate = $this->_localeDate->date();
+        }*/
+        if ($attributeName == "special_from_date" && $startDate == '' && $object->getSpecialPrice()) {
             $startDate = $this->_localeDate->date();
         }
+        // PATCH END
 
         return $startDate;
     }
