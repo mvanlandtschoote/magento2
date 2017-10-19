@@ -53,7 +53,11 @@ class GalleryManagement implements \Magento\Catalog\Api\ProductAttributeMediaGal
         if (!$this->contentValidator->isValid($entryContent)) {
             throw new InputException(__('The image content is not valid.'));
         }
-        $product = $this->productRepository->get($sku);
+        
+        // PATCH BEGIN
+        // Get media from All Store view (store_id : 0)
+        $product = $this->productRepository->get($sku,true,0);
+        //END PATCH
 
         $existingMediaGalleryEntries = $product->getMediaGalleryEntries();
         $existingEntryIds = [];
